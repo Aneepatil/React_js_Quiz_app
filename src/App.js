@@ -1,25 +1,76 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import QuestionList from "./components/Questions";
+import { v4 as uuidv4 } from "uuid";
+import "./App.css";
 
-function App() {
+const App = () => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [clicked, setClicked] = useState(false);
+  const [showScore, setShowScore] = useState(false);
+
+  const handleCorrectAnswer = (isCorrect) => {
+    if (isCorrect) {
+      setScore(score + 1);
+    }
+    setClicked(true);
+  };
+
+  const handleNextQuestion = () => {
+    setClicked(false);
+    if (currentQuestion < QuestionList.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setShowScore(true);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app_wrapper">
+      {showScore ? (
+        <div>
+          <div className="completed">Completed !!!</div>
+          <div className="score_section">
+            Your Score: {score}/{QuestionList.length}
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="question_section_wrapper">
+            <div className="question_count">
+              Question {currentQuestion + 1} of {QuestionList.length}
+            </div>
+
+            <div className="question">
+              {QuestionList[currentQuestion].question}
+            </div>
+
+            <div className="answer_section_wrapper">
+              {QuestionList[currentQuestion].answerList.map((anwerOptions) => {
+                return (
+                  <li className="answer_list" key={uuidv4()}>
+                    <button
+                      className="answer_btn"
+                      onClick={() =>
+                        handleCorrectAnswer(anwerOptions.isCorrect)
+                      }
+                    >
+                      {anwerOptions.answer}
+                    </button>
+                  </li>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <button className="next_btn" onClick={handleNextQuestion}>
+              Next ⏭️
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
